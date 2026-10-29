@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>解机 jieji · 看见、听见、动起来</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+<link rel="stylesheet" href="/web/styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">解机</span>
+    <span class="sub">jieji · 看见 · 听见 · 动起来</span>
+  </div>
+  <div class="pills" id="pills">
+    <span class="pill" id="pill-driver" title="身体">身体 —</span>
+    <span class="pill" id="pill-camera" title="眼睛">眼 —</span>
+    <span class="pill" id="pill-audio" title="耳朵">耳 —</span>
+    <span class="pill" id="pill-model" title="大脑">脑 —</span>
+    <span class="pill" id="pill-mode" title="模式">待机</span>
+  </div>
+  <div class="top-actions">
+    <button id="btn-auto" class="btn ghost" title="自动巡逻：每隔一会儿自己看一眼前方">自动巡逻</button>
+    <button id="btn-understand" class="btn ghost" title="让模型把这一刻的画面和这句话都读一遍">读懂这一刻</button>
+    <button id="btn-settings" class="btn ghost" title="设置">⚙</button>
+    <button id="btn-estop" class="btn danger" title="急停（快捷键：空格）">急停</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="left">
+    <div class="viewport card">
+      <img id="stream" alt="机器人第一视角" />
+      <div class="scanline"></div>
+      <div class="hud">
+        <span id="hud-front">前方 —</span>
+        <span id="hud-heading">朝向 —</span>
+        <span id="hud-battery">电量 —</span>
+        <span id="hud-fps">— fps</span>
+      </div>
+      <div class="estop-banner" id="estop-banner" hidden>已急停 · 点「解除」恢复</div>
+    </div>
+
+    <div class="under-view">
+      <div class="card mini">
+        <div class="mini-head">模拟世界 <span class="muted" id="map-note">（仅 mock 身体）</span></div>
+        <img id="map" class="map" alt="俯视图" />
+      </div>
+      <div class="card mini">
+        <div class="mini-head">这一刻的身价</div>
+        <dl class="stats" id="stats">
+          <div><dt>决策</dt><dd id="st-decisions">0</dd></div>
+          <div><dt>平均延迟</dt><dd id="st-latency">—</dd></div>
+          <div><dt>本轮 tokens</dt><dd id="st-tokens">0</dd></div>
+          <div><dt>被拦次数</dt><dd id="st-blocked">0</dd></div>
+          <div><dt>缓存命中</dt><dd id="st-cache">0</dd></div>
+          <div><dt>运行时长</dt><dd id="st-uptime">0s</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="composer card">
+      <div class="dpad">
+        <button class="pad" data-act="forward" title="前进 (W)">▲</button>
+        <div class="pad-row">
+          <button class="pad" data-act="turn_left" title="左转 (A)">◀</button>
+          <button class="pad stop" data-act="stop" title="停 (空格)">■</button>
+          <button class="pad" data-act="turn_right" title="右转 (D)">▶</button>
+        </div>
+        <button class="pad" data-act="backward" title="后退 (S)">▼</button>
+      </div>
+      <div class="say-box">
+        <input id="text" type="text" placeholder="对它说点什么，比如「往前走一点」「你看到什么了」" autocomplete="off" />
+        <button id="btn-mic" class="btn ghost" title="按住说话（浏览器语音识别）">🎙</button>
+        <button id="btn-send" class="btn">发送</button>
+      </div>
+      <div class="quick">
+        <button class="chip" data-text="往前走一点">往前走</button>
+        <button class="chip" data-text="左转一下">左转</button>
+        <button class="chip" data-text="右转一下">右转</button>
+        <button class="chip" data-text="停下">停下</button>
+        <button class="chip" data-text="你看到什么了？">你看到什么</button>
+        <button class="chip" data-text="介绍一下你自己">介绍一下你</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="right">
+    <div class="card feed-card">
+      <div class="card-head">
+        <h2>现场</h2>
+        <label class="switch" title="默认关闭：只有勾上才会用系统音箱朗读。不勾就只有文字，绝不出声。">
+          <input type="checkbox" id="chk-speak" /> 朗读
+        </label>
+      </div>
+      <div class="feed" id="feed">
+        <div class="empty">还没开始。<br />打字、说话，或者打开「自动巡逻」让它自己看。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 设置抽屉 -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-panel">
+    <div class="drawer-head">
+      <h2>设置</h2>
+      <button class="btn ghost" id="btn-close-settings">✕</button>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="brain">大脑</button>
+      <button class="tab" data-tab="senses">眼睛耳朵</button>
+      <button class="tab" data-tab="body">身体</button>
+      <button class="tab" data-tab="safety">安全</button>
+      <button class="tab" data-tab="teach">教它按键</button>
+      <button class="tab" data-tab="data">数据</button>
+    </div>
+    <div class="tab-body" id="tab-body"></div>
+    <div class="drawer-foot">
+      <span id="save-hint" class="muted"></span>
+      <button class="btn" id="btn-save">保存并生效</button>
+    </div>
+  </div>
+</div>
+
+<!-- 读懂这一刻 -->
+<div class="drawer" id="understand-drawer" hidden>
+  <div class="drawer-panel wide">
+    <div class="drawer-head">
+      <h2>读懂这一刻</h2>
+      <button class="btn ghost" id="btn-close-understand">✕</button>
+    </div>
+    <div id="understand-body" class="kv-wrap"><div class="empty">点「读懂这一刻」</div></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/web/app.js"></script>
+</body>
+</html>

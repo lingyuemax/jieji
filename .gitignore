@@ -1,0 +1,14 @@
+# 运行产物
+data/
+_scratch/
+*.log
+.pytest_cache/
+.screenshots/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 本机配置（含 Key），绝对不要提交
+.env
+.env.local

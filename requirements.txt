@@ -1,0 +1,12 @@
+# 核心依赖：有这些就能在「模拟身体 + 模拟摄像头」下跑完整闭环
+fastapi>=0.110
+uvicorn>=0.29
+httpx>=0.27
+numpy>=1.24
+pillow>=10.0
+
+# --- 接真硬件时才需要 ---
+# opencv-python>=4.8      # USB 摄像头 / 视频文件作为眼睛
+# faster-whisper>=1.0     # 本机语音识别（ASR_PROVIDER=local）
+# websockets>=12          # 连 ESP32 桥（DRIVER=ir / button）
+# pyserial>=3.5           # 串口直驱电机（DRIVER=serial）

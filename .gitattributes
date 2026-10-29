@@ -1,0 +1,6 @@
+# 统一用 LF，Windows 上也不会每次 diff 都炸
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
